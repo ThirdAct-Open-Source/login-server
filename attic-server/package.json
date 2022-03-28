@@ -1,6 +1,6 @@
 {
     "name": "@znetstar/attic-server",
-    "version": "3.31.1",
+    "version": "3.32.0",
     "description": "",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -29,7 +29,6 @@
         "@types/chance": "^1.1.0",
         "@types/connect-mongodb-session": "0.0.3",
         "@types/cookie-parser": "^1.4.2",
-        "@types/cors": "^2.8.12",
         "@types/eventemitter2": "^4.1.0",
         "@types/express": "^4.17.7",
         "@types/express-session": "^1.17.0",
@@ -91,7 +90,6 @@
         "connect-mongo": "^4.4.1",
         "connect-redis": "^5.1.0",
         "cookie-parser": "^1.4.5",
-        "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "eventemitter2": "^6.4.4",
         "express": "^4.17.1",

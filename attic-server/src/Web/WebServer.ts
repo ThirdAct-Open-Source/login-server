@@ -12,7 +12,6 @@ import {IError} from "@znetstar/attic-common/lib/Error/IError";
 import * as ws from 'ws';
 import * as _ from 'lodash';
 import {initDocumentSync} from "./DocumentSyncMiddleware";
-const cors = require('cors');
 import {makeBinaryEncoders, ToPojo} from '@thirdact/to-pojo/lib/toPojo';
 import {
   BinaryEncoding,
@@ -207,14 +206,15 @@ export async function loadWebServer() {
 
 // @ts-ignore
     WebExpress = express();
-    if (typeof(ApplicationContext.config.cors) !== 'undefined')
-      WebExpress.use(cors(
-        typeof(ApplicationContext.config.cors) === 'object' ? ApplicationContext.config.cors : void(0)
-      ));
-
     WebSocketServer = new ws.Server({ noServer: true });
 
     WebHTTPServer = new HTTPServer(WebExpress);
+
+    await ApplicationContext.emitAsync('launch.loadWebServer.webMiddlewareInjectStart', {
+      WebExpress,
+      WebSocketServer,
+      WebHTTPServer
+    });
     WebHTTPServer.on('upgrade', function (request: any, socket: any, head: any) {
       (async () => {
         await new Promise<void>((resolve, reject) => {
@@ -243,6 +243,15 @@ export async function loadWebServer() {
     WebExpress.use(AuthMiddleware);
 
     RPCTransport = new AtticExpressTransport(new EncodeToolsSerializer(DEFAULT_ENCODE_OPTIONS), WebRouter);
+
+
+    await ApplicationContext.emitAsync('launch.loadWebServer.rpcMiddlewareInjectStart', {
+      WebExpress,
+      WebSocketServer,
+      WebHTTPServer,
+      RPCTransport,
+      WebRouter
+    });
 
     RPCServer.addTransport(RPCTransport);
 
