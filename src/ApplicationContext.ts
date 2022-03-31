@@ -30,13 +30,11 @@ import * as path from 'path';
 import {IApplicationContext} from "@znetstar/attic-common/lib/Server/index";
 import Constructible from "./Constructible";
 import {IDriver} from "@znetstar/attic-common/lib/IDriver";
-import {handleErrorMiddleware, WebSocketPaths, WebSocketServer} from "./Web/WebServer";
-import * as ws from 'ws';
+import {handleErrorMiddleware} from "./Web/WebServer";
 import {DBInitRecordMongo, DBInitRecordMongoose} from "@znetstar/attic-common/lib/Server/IConfig";
 import {asyncMiddleware} from "./Web/Common";
 import {ObjectId} from "mongodb";
 import {ErrorBroker} from "./ErrorBroker";
-import {create as createIPFS, IPFS, Options as IPFSOptions} from 'ipfs-core';
 import {EncodeTools} from "@znetstar/encode-tools";
 import {BinaryEncoding, IDFormat} from "@znetstar/encode-tools/lib/EncodeTools";
 import {IEvent} from "@znetstar/attic-common";
@@ -225,12 +223,12 @@ export class ApplicationContextBase extends EventEmitter implements IApplication
         return WebExpress;
     }
 
-    get webSocketServer() {
-      return WebSocketServer;
+    get webSocketServer(): unknown {
+      return null;
     }
 
-    get webSocketPaths(): Map<string, ws.Server> {
-      return WebSocketPaths;
+    get webSocketPaths(): Map<string, unknown> {
+      return new Map<string, unknown>();
     }
 
     get drivers() {
