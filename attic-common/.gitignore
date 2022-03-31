@@ -1,9 +1,0 @@
-ignore
-.DS_STORE
-.vscode
-.tscache
-node_modules
-lib/
-tscommand*
-.idea
-data

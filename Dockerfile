@@ -1,65 +1,31 @@
-FROM node:12
+FROM ubuntu:20.04
 
-ADD ./attic-common /app/attic-common
-WORKDIR /app/attic-common
-RUN npm ci && \
-    npm run build && \
-    npm link && \
-    npm prune --production && \
-    npm cache clean --force
+WORKDIR /opt/login-server
 
-ADD ./attic-cli-common /app/attic-cli-common
-WORKDIR /app/attic-cli-common
-RUN npm ci && \
-    npm run build && \
-    npm link @znetstar/attic-common && \
-    npm link && \
-    npm prune --production && \
-    npm cache clean --force
+ADD ./package.json /opt/login-server/package.json
+ADD ./package-lock.json /opt/login-server/package-lock.json
 
-ADD ./attic-cli-url-shortener /app/attic-cli-url-shortener
-WORKDIR /app/attic-cli-url-shortener
-RUN npm ci && \
-    npm pack && \
-    rm -rf ./znetstar-attic-cli-url-*.tgz && \
-    npm link @znetstar/attic-common && \
-    npm link @znetstar/attic-cli-common && \
-    npm link && \
-    npm prune --production && \
-    npm cache clean --force
+RUN apt-get update -y && \
+    apt-get install -y curl && \
+    bash -c 'curl -fsSL https://deb.nodesource.com/setup_14.x | bash -' && \
+    apt-get install -y nodejs build-essential python2 python3 && \
+    ln -sv /usr/bin/python3 /usr/bin/python && \
+    rm -rf /var/lib/apt/lists/* && \
+    npm ci
 
-ADD ./attic-cli /app/attic-cli
-WORKDIR /app/attic-cli
-RUN npm ci && \
-    npm pack && \
-    rm -rf ./znetstar-attic-cli-*.tgz && \
-    npm link @znetstar/attic-common && \
-    npm link @znetstar/attic-cli-common && \
-    npm link @znetstar/attic-cli-url-shortener && \
-    ln -sv /app/attic-cli/bin/run /usr/local/bin/attic-cli && \
-    npm prune --production && \
-    npm cache clean --force
+ADD . /opt/login-server
 
-ADD ./attic-server /app/attic-server
-WORKDIR /app/attic-server
-RUN npm ci && \
-    npm run build && \
-    npm link @znetstar/attic-common && \
-    ln -s /app/attic-server/bin/attic-server /usr/local/bin/attic-server && \
-    npm prune --production && \
-    npm cache clean --force
+RUN npm run build
 
-WORKDIR /app
 
-ENV NODE_ENV production
+RUN ln -s /opt/login-server/bin/login-server /usr/local/bin/login-server
 
-ENV PATH /usr/local/bin:$PATH
+ENV PATH "/usr/local/bin:/opt/login-server/bin:$PATH"
 
-ENV WEB_RESOLVER_HOST 0.0.0.0
+ENV UPLOAD_TEMP_DIR /tmp/attic/uploads
 
-ENV HOST 0.0.0.0
+VOLUME /root/.jsipfs
 
 EXPOSE 7373
 
-EXPOSE 3737
-
+ENTRYPOINT [ "/usr/local/bin/login-server" ]
